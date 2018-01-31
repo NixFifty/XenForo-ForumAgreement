@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="NixFifty_ForumAgreement" title="NixFifty: Forum Agreement" version_string="1.0.4" version_id="1000470" url="https://nixfifty.com/" install_callback_class="NixFifty_ForumAgreement_Install" install_callback_method="install" uninstall_callback_class="NixFifty_ForumAgreement_Install" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="nf_forumagreement_forum_edit"><![CDATA[<fieldset>
+
+	<xen:checkboxunit label="">
+		<xen:option name="forum_agreement_enabled" label="{xen:phrase nf_forumagreement_show_agreement_message}" selected="{$forum.forum_agreement_enabled}" />
+	</xen:checkboxunit>
+	
+	<xen:textboxunit label="{xen:phrase nf_forumagreement_agreement_message}:" name="forum_agreement_message" value="{$forum.forum_agreement_message}" rows="3" inputclass="Elastic">
+		<xen:hint>{xen:phrase you_may_use_html}</xen:hint>
+	</xen:textboxunit>
+		
+	<xen:spinboxunit name="forum_agreement_expiry" label="{xen:phrase nf_forumagreement_days_until_expiry}:" value="{$forum.forum_agreement_expiry}" min="0" max="365" />
+	
+	<xen:include template="editor_js_setup" />
+
+</fieldset>]]></template>
+  </admin_templates>
+  <admin_template_modifications>
+    <modification template="forum_edit" modification_key="nf_forumagreement_forum_edit" description="" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<!-- slot: after_description -->]]></find>
+      <replace><![CDATA[<!-- slot: after_description -->
+<xen:include template="nf_forumagreement_forum_edit" />]]></replace>
+    </modification>
+  </admin_template_modifications>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class" execute_order="6" callback_class="NixFifty_ForumAgreement_Listen" callback_method="loadClass" active="1" hint="XenForo_ControllerPublic_Forum" description="Listens for the XenForo_ControllerPublic_Forum class."/>
+    <listener event_id="load_class" execute_order="10" callback_class="NixFifty_ForumAgreement_Listen" callback_method="loadClass" active="1" hint="XenForo_ControllerAdmin_Forum" description="Listens for the XenForo_ControllerAdmin_Forum class."/>
+    <listener event_id="load_class" execute_order="10" callback_class="NixFifty_ForumAgreement_Listen" callback_method="loadClass" active="1" hint="XenForo_DataWriter_Forum" description="Listens for the XenForo_DataWriter_Forum class."/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="nf_forumagreement_agree" version_id="1000" version_string="1.0.0"><![CDATA[Agree]]></phrase>
+    <phrase title="nf_forumagreement_agreement_message" version_id="1000" version_string="1.0.0"><![CDATA[Agreement message]]></phrase>
+    <phrase title="nf_forumagreement_days_until_expiry" version_id="1000" version_string="1.0.0"><![CDATA[Days until expiry]]></phrase>
+    <phrase title="nf_forumagreement_show_agreement_message" version_id="1000" version_string="1.0.0"><![CDATA[Show agreement message]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="nf_forum_agreement" version_id="1003" version_string="1.0.0"><![CDATA[<xen:title>{$forum.title}{xen:helper pagenumber, $page}</xen:title>
+<xen:h1>{$forum.title}</xen:h1>
+
+<xen:require css="nf_forum_agreement.css" />
+
+<xen:if is="{$forum.description} AND {xen:property threadListDescriptions}">
+	<xen:description class="baseHtml">{xen:raw $forum.description}</xen:description>
+</xen:if>
+
+<div class="section sectionMain">
+	<div class="agreementText baseHtml">
+		{xen:raw $agreementParsed}
+	</div>
+
+	<form class="xenForm" method="post" action="">
+		<dl class="ctrlUnit submitUnit">
+			<dt></dt>
+			<dd>
+				<span id="AgreeTimer">({xen:phrase please_wait_x_seconds, "seconds=<span>10</span>"})<br /></span>
+				
+				<input type="submit" name="save" value="{xen:phrase nf_forumagreement_agree}" accesskey="s" class="button primary" id="SubmitButton" />
+				<a href="{$homeLink}" type="button" class="button">{xen:phrase cancel}</a>
+			</dd>
+		</dl>
+		
+		<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+		<input type="hidden" name="_xfConfirm" value="1" />
+	</form>
+</div>
+
+<script>
+	(function($) {
+		$(function() {
+			var rt = $('#AgreeTimer'), s = rt.find('span'), t = parseInt(s.text(), 10),
+				sub = $('#SubmitButton'),
+				i = setInterval(function() {
+					t--;
+					if (t <= 0) {
+						rt.hide();
+						clearInterval(i);
+					} else {
+						s.text(t);
+					}
+				}, 1000);
+			
+			var f = function(e) {
+				if (t > 0) {
+					e.preventDefault();
+				}
+			};
+			
+			sub.click(f);
+			sub.closest('form').submit(f);
+		});
+	})(jQuery);
+</script>]]></template>
+    <template title="nf_forum_agreement.css" version_id="1003" version_string="1.0.0"><![CDATA[.primaryContent
+{
+	background-color: {xen:property contentBackground};
+	padding: 10px;
+}]]></template>
+  </templates>
+  <public_template_modifications/>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>

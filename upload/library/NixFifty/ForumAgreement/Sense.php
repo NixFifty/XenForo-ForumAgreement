@@ -1,0 +1,7 @@
+<?php
+
+class XFCP_NixFifty_ForumAgreement_XenForo_ControllerAdmin_Forum extends XenForo_ControllerAdmin_Forum {}
+
+class XFCP_NixFifty_ForumAgreement_XenForo_ControllerPublic_Forum extends XenForo_ControllerPublic_Forum {}
+
+class XFCP_NixFifty_ForumAgreement_XenForo_DataWriter_Forum extends XenForo_DataWriter_Forum {}
